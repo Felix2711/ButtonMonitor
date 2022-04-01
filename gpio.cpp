@@ -46,3 +46,15 @@ bool gpio::get(int pin)
 {
     return lgGpioRead(m_handle, pin);
 }
+
+// checks for flank change; edge = true checks for rising; edge = false checks for falling
+bool gpio::detect_edge(int pin, bool edge, int idx)
+{
+    if(m_oldState[idx] != gpio::get(pin) && gpio::get(pin) != edge)
+    {
+        m_oldState[idx] = gpio::get(pin);
+        return true;
+    }
+    m_oldState[idx] = gpio::get(pin);
+    return false;
+}

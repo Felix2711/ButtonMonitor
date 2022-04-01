@@ -22,6 +22,8 @@ private:
     QTimer* m_timer;
     gpio* m_gpio;
 
+    QLabel* m_cntLabel;
+    int m_cnt;
 };
 
 #endif // WIDGET_H

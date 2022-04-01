@@ -14,7 +14,8 @@ Widget::Widget(QWidget *parent)
 
     // Labels for input pins / buttons
     int column = 0;
-    for (auto pin : BUTTONS) {
+    for (auto pin : BUTTONS)
+    {
         // pin numbers
         QLabel* label = new QLabel("GPIO " + QString::number(pin), this);
         label->setAlignment(Qt::AlignCenter);
@@ -26,6 +27,11 @@ Widget::Widget(QWidget *parent)
         grid->addWidget(state, 1, column++); // links oben (2. Zeile / 1. - 3. Spalte)
         m_input_display.push_back(state);
     }
+
+    m_cntLabel = new QLabel("cnt: 0", this);
+    m_cntLabel->setAlignment(Qt::AlignHCenter);
+    grid->addWidget(m_cntLabel, 2, 1);
+    m_cnt = 0;
 
     // initialize hardware
     m_gpio = new gpio();
@@ -44,8 +50,30 @@ Widget::~Widget()
 void Widget::updateButtonState()
 {
     int n = 0;
-    for (auto pin : BUTTONS){
+    for (auto pin : BUTTONS)
+    {
         int state = !m_gpio->get(pin);
+
+        if(m_gpio->detect_edge(pin, true, n))
+        {
+            switch (n)
+            {
+                case 0:
+                    m_cnt--;
+                    break;
+                case 1:
+                    m_cnt =0;
+                    break;
+                case 2:
+                    m_cnt++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        m_cntLabel->setText("cnt : " + QString::number(m_cnt));
         m_input_display[n++]->setText(QString::number(state));
     }
 }
